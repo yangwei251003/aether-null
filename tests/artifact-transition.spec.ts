@@ -1,0 +1,21 @@
+import { expect, test } from '@playwright/test'
+
+test('artifact morph settles in both directions without leaving a snapshot overlay', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop')
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  const enter = page.getByRole('button', { name: 'Enter the signal and enable sound' })
+  await expect(enter).toBeEnabled({ timeout: 30_000 })
+  await enter.press('Enter')
+  const artifact = page.locator('[data-testid="artifact-metal-seed"]')
+  await artifact.evaluate((element) => element.scrollIntoView({ block: 'center' }))
+  await artifact.getByRole('button', { name: /inspect specimen/i }).press('Enter')
+  const dialog = page.getByRole('dialog', { name: /The Breathing Seed/i })
+  await expect(dialog).toBeVisible()
+  await expect(page.locator('html')).not.toHaveAttribute('data-view-transition', /.+/, { timeout: 4_000 })
+  await expect(dialog).toContainText('A machine that practised becoming alive.')
+  await dialog.screenshot({ path: `output/playwright/${testInfo.project.name}-artifact-detail.png`, animations: 'allow' })
+  await dialog.getByRole('button', { name: 'Close artifact detail' }).press('Enter')
+  await expect(dialog).toBeHidden()
+  await expect(page.locator('html')).not.toHaveAttribute('data-view-transition', /.+/, { timeout: 4_000 })
+  await expect(page.locator('html')).not.toHaveAttribute('data-artifact-morph', /.+/)
+})

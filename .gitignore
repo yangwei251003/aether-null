@@ -1,0 +1,15 @@
+node_modules/
+output/
+*.tsbuildinfo
+.cache/
+dist/
+.playwright-cli/
+test-results/
+playwright-report/
+output/playwright/results/
+output/playwright/report/
+%USERPROFILE%/
+*.log
+.env
+.env.*
+!.env.example
